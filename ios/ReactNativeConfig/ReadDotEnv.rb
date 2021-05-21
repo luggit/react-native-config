@@ -59,5 +59,11 @@ def read_dot_env(envs_root)
       puts('**************************')
       return [{}, false] # set dotenv as an empty hash
   end
+
+  ENV
+    .select { |k,v| k.start_with?("RN_CONFIG_") }
+    .transform_keys { |k| k[10..] }
+    .each { |k,v| dotenv[k]=v }
+
   [dotenv, custom_env]
 end

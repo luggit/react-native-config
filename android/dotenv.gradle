@@ -61,6 +61,11 @@ def loadDotEnv(flavor = getCurrentFlavor()) {
         println("**************************")
     }
 
+    System.env
+        .findAll { it.key.startsWith("RN_CONFIG_") }
+        .collectEntries { key, value -> [key.substring(10), value] }
+        .each { key, value -> env.put(key, value) }
+
     project.ext.set("env", env)
 }
 

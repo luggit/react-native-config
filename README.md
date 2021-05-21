@@ -307,6 +307,39 @@ Then edit the newly created scheme to make it use a different env file. From the
   ```
 Also ensure that "Provide build settings from", just above the script, has a value selected so that PROJECT_DIR is set.
 
+## Overriding Variables (iOS & Android)
+
+Environment variables can override or be added alongside variables declared in `.env`:
+
+For an `.env` in the root of your React Native app:
+
+```
+API_URL=https://myapi.com
+GOOGLE_MAPS_API_KEY=abcdefgh
+TRACKING_ENABLED=true
+```
+
+By running your app with `RN_CONFIG_TRACKING_ENABLED=false react-native run-ios`, the variables declared in your app will be:
+
+```
+import Config from "react-native-config";
+
+Config.API_URL; // 'https://myapi.com'
+Config.GOOGLE_MAPS_API_KEY; // 'abcdefgh'
+Config.TRACKING_ENABLED; // 'false'
+```
+
+Any environment variables with an `RN_CONFIG_` prefix will be available. For instance, we could add a new variable by running `RN_CONFIG_DEV_TOOLS=true react-native run-ios` with the same `.env` file above will result in:
+
+```
+import Config from "react-native-config";
+
+Config.API_URL; // 'https://myapi.com'
+Config.GOOGLE_MAPS_API_KEY; // 'abcdefgh'
+Config.TRACKING_ENABLED; // 'true'
+Config.DEV_TOOLS; // 'true'
+```
+
 ## Troubleshooting
 
 ### Problems with Proguard
