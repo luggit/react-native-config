@@ -136,6 +136,20 @@ defaultConfig {
 }
 ```
 
+In your build variant, you may also want to specify [`matchingFallbacks`](https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/BuildType#matchingfallbacks) (and set it to `['debug']` or `['release']`) in order to specify the appropriate build variant to  3rd-party react native android modules (including this one) you may be using e.g.:
+
+```
+    buildTypes {
+        debug {...}
+        release {...}
+	
+        foo.initWith(buildTypes.debug)
+        foo {
+            applicationIdSuffix ".foo"
+            matchingFallbacks =  ['debug']
+        }
+```
+
 ## Native Usage
 
 ### Android
