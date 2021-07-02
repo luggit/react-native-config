@@ -22,8 +22,9 @@ def getCurrentFlavor() {
 }
 
 def loadDotEnv(flavor = getCurrentFlavor()) {
-
     def envFile = project.hasProperty("defaultEnvFile") ? project.defaultEnvFile : ".env"
+    def localEnvFile = ".env.local"
+
     if (System.env['ENVFILE']) {
         envFile = System.env['ENVFILE']
     } else if (System.getProperty('ENVFILE')) {
@@ -60,6 +61,34 @@ def loadDotEnv(flavor = getCurrentFlavor()) {
         println("*** Missing .env file ****")
         println("**************************")
     }
+
+    def useLocalEnv = false
+    if (System.env['USE_ENV_LOCAL_CONFIG']) {
+        useLocalEnv = true
+    } else if (System.getProperty('USE_ENV_LOCAL_CONFIG')) {
+        useLocalEnv = true
+    } else if (project.hasProperty("useEnvLocalConfig")) {
+        // use startsWith because sometimes the task is "generateDebugSources", so we want to match "debug"
+        project.ext.useEnvLocalConfig.any { pair ->
+            if (flavor.startsWith(pair.key)) {
+                useLocalEnv = pair.value
+                return true
+            }
+        }
+    }
+
+    if (useLocalEnv) {
+        File localFile = new File("$project.rootDir/../$localEnvFile");
+        if (localFile.exists()) {
+            localFile.eachLine { line ->
+                def matcher = (line =~ /^\s*(?:export\s+|)([\w\d\.\-_]+)\s*=\s*['"]?(.*?)?['"]?\s*$/)
+                if (matcher.getCount() == 1 && matcher[0].size() == 3) {
+                    env.put(matcher[0][1], matcher[0][2].replace('"', '\\"'))
+                }
+            }
+        }
+    }
+
 
     project.ext.set("env", env)
 }

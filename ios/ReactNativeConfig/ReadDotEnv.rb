@@ -9,6 +9,7 @@ Encoding.default_internal = Encoding::UTF_8
 # TODO: introduce a parameter which controls how to build relative path
 def read_dot_env(envs_root)
   defaultEnvFile = '.env'
+  localEnvFile = '.env.local'
   puts "going to read env file from root folder #{envs_root}"
 
   # pick a custom env file if set
@@ -18,6 +19,12 @@ def read_dot_env(envs_root)
   else
     custom_env = false
     file = ENV['ENVFILE'] || defaultEnvFile
+  end
+
+  if File.exists?("/tmp/useenvlocal")
+    useLocalEnv = true
+  else
+    useLocalEnv = ENV["USE_ENV_LOCAL_CONFIG"] || false
   end
 
   dotenv = begin
@@ -38,7 +45,7 @@ def read_dot_env(envs_root)
       raw = File.read(defaultEnvPath)
     end
 
-    raw.split("\n").inject({}) do |h, line|
+    parsed = raw.split("\n").inject({}) do |h, line|
       m = line.match(dotenv_pattern)
 
       next h if line.nil? || line.strip.empty?
@@ -53,6 +60,34 @@ def read_dot_env(envs_root)
       val = m[:val].to_s.gsub('"', '\"')
       h.merge(key => val)
     end
+
+    if useLocalEnv
+      localPath = File.expand_path(File.join(envs_root, localEnvFile.to_s))
+      if File.exists?(localPath)
+        localRaw = File.read(localPath)
+      elsif File.exist?(localEnvFile)
+        raw = File.read(localEnvFile)
+      else
+        localRaw = "\n"
+      end
+
+      parsed = localRaw.split("\n").inject(parsed) do |h, line|
+        m = line.match(dotenv_pattern)
+        
+        next h if line.nil? || line.strip.empty?
+        next h if line.match(/^\s*#/)
+
+        if m.nil?
+          abort('Invalid entry in .env file. Please verify your .env file is correctly formatted.')
+        end
+
+        key = m[:key]
+        # Ensure string (in case of empty value) and escape any quotes present in the value.
+        val = m[:val].to_s.gsub('"', '\"')
+        h.merge(key => val)
+      end
+    end
+    parsed
     rescue Errno::ENOENT
       puts('**************************')
       puts('*** Missing .env file ****')

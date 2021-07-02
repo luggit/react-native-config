@@ -24,6 +24,32 @@ Config.GOOGLE_MAPS_API_KEY; // 'abcdefgh'
 
 Keep in mind this module doesn't obfuscate or encrypt secrets for packaging, so **do not store sensitive keys in `.env`**. It's [basically impossible to prevent users from reverse engineering mobile app secrets](https://rammic.github.io/2015/07/28/hiding-secrets-in-android-apps/), so design your app (and APIs) with that in mind.
 
+### Local config
+
+Sometimes you want temporary edit some config entries. It's pretty handy to use different file for that case and add it to `.gitignore`.
+If there is no local config, nothing bad happens.
+You can enable this feature by following the instructions below and creating `.env.local` where you override config with local modifications.
+
+**Be careful with release builds!**
+
+Here is how you can enbale
+#### Android
+List all needed targets
+```
+project.ext.useEnvLocalConfig = [
+    debug: true
+]
+```
+#### iOS
+Add this to you pre-actions in needed schemes
+```
+echo "1" > /tmp/useenvlocal
+```
+#### Env variable
+```
+USE_ENV_LOCAL_CONFIG=1
+```
+
 ## Setup
 
 Install the package:
