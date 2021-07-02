@@ -12,12 +12,16 @@ def read_dot_env(envs_root)
   puts "going to read env file from root folder #{envs_root}"
 
   # pick a custom env file if set
-  if File.exist?('/tmp/envfile')
+  puts "env file is #{ENV['ENVFILE']} and tmp env file content is #{File.read('/tmp/envfile').strip}"
+  if ENV['ENVFILE']
+    custom_env = false
+    file = ENV['ENVFILE']
+  elsif File.exist?('/tmp/envfile')
     custom_env = true
     file = File.read('/tmp/envfile').strip
   else
     custom_env = false
-    file = ENV['ENVFILE'] || defaultEnvFile
+    file = defaultEnvFile
   end
 
   dotenv = begin
