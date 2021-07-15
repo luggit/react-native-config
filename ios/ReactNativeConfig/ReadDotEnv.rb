@@ -14,7 +14,7 @@ def read_dot_env(envs_root)
   # pick a custom env file if set
   if File.exist?('/tmp/envfile')
     custom_env = true
-    file = File.read('/tmp/envfile').strip
+    file = '/tmp/envfile'
   else
     custom_env = false
     file = ENV['ENVFILE'] || defaultEnvFile
