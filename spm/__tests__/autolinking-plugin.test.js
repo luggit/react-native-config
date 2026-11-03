@@ -7,7 +7,8 @@ const path = require('node:path');
 const {execFileSync} = require('node:child_process');
 
 const root = path.resolve(__dirname, '../..');
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "rnc-spm space-'quoted-"));
+// Node resolves require() through macOS's /var -> /private/var symlink.
+const tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "rnc-spm space-'quoted-")));
 
 try {
   // Exercise both library and app paths containing spaces and apostrophes.

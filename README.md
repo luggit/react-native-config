@@ -93,6 +93,9 @@ The reader compiles in the app target because Xcode builds package dependencies
 before app build phases. The bridge compiles in the Swift package; CocoaPods
 continues to compile the original sources. The Extension subspec is not supported
 by this SwiftPM integration.
+Under SwiftPM, native app code imports `<RNCConfig/RNCConfig.h>`.
+The plugin uses the Preview `generatedSources` API with a `.m` file, which React
+Native currently documents as future-proofing.
 
 <details>
 <summary><b>Manual linking</b> — only for React Native below 0.60, or react-native-windows below 0.63</summary>

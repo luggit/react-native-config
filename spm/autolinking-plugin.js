@@ -13,7 +13,7 @@ function copyIfChanged(source, destination) {
 }
 
 // React Native 0.88's SwiftPM autolinking plugin API is currently Preview.
-module.exports = function autolinkingPlugin({outputDir, projectRoot}) {
+module.exports = function autolinkingPlugin({appRoot, outputDir, projectRoot}) {
   const root = path.resolve(__dirname, '..');
   const nativeRoot = path.join(root, 'ios', 'ReactNativeConfig');
   // Own a sibling tree, leaving RN's generated autolinking files untouched.
@@ -40,6 +40,11 @@ module.exports = function autolinkingPlugin({outputDir, projectRoot}) {
     copyIfChanged(path.join(nativeRoot, file), path.join(sourcesRoot, file));
   }
   const generator = path.join(nativeRoot, 'BuildDotenvConfig.rb');
+  const relativePath = file => path.relative(appRoot, file);
+  const xcodePath = file => '$(SRCROOT)/' + relativePath(file);
+  // Shell scripts expand SRCROOT themselves; quote the relative suffix separately
+  // so spaces, apostrophes and shell metacharacters stay literal.
+  const scriptPath = file => '"${SRCROOT}/"' + shellQuote(relativePath(file));
   return {
     packageDependencies: [{name: 'RNCConfig', path: packagePath}],
     productDependencies: [{name: 'RNCConfig', package: 'RNCConfig'}],
@@ -54,9 +59,9 @@ module.exports = function autolinkingPlugin({outputDir, projectRoot}) {
       name: 'Config codegen',
       position: 'beforeCompile',
       alwaysOutOfDate: true,
-      script: `set -eu\n${shellQuote(generator)} ${shellQuote(projectRoot)} ${shellQuote(sourcesRoot)}`,
-      inputPaths: [generator, path.join(nativeRoot, 'ReadDotEnv.rb')],
-      outputPaths: [path.join(sourcesRoot, 'GeneratedDotEnv.m'), '$(BUILD_DIR)/GeneratedInfoPlistDotEnv.h'],
+      script: `set -eu\n${scriptPath(generator)} ${scriptPath(projectRoot)} ${scriptPath(sourcesRoot)}`,
+      inputPaths: [xcodePath(generator), xcodePath(path.join(nativeRoot, 'ReadDotEnv.rb'))],
+      outputPaths: [xcodePath(path.join(sourcesRoot, 'GeneratedDotEnv.m')), '$(BUILD_DIR)/GeneratedInfoPlistDotEnv.h'],
     }],
   };
 };

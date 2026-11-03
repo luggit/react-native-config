@@ -3,7 +3,7 @@
 import Foundation
 import PackageDescription
 
-// React Native stages this manifest at build/generated/react-native-config/libs/RNCConfig.
+// This library's autolinking plugin stages this manifest at build/generated/react-native-config/libs/RNCConfig.
 let usedRootEntries: Set<String> = ["ios", "include", "spm-headers", "Package.swift"]
 let unusedRootEntries = try! FileManager.default.contentsOfDirectory(atPath: Context.packageDirectory)
     .filter { !usedRootEntries.contains($0) }
