@@ -94,8 +94,8 @@ before app build phases. The bridge compiles in the Swift package; CocoaPods
 continues to compile the original sources. The Extension subspec is not supported
 by this SwiftPM integration.
 Under SwiftPM, native app code imports `<RNCConfig/RNCConfig.h>`.
-The plugin uses the Preview `generatedSources` API with a `.m` file, which React
-Native currently documents as future-proofing.
+The plugin uses Preview autolinking-plugin `generatedSources` support for an
+Objective-C (`.m`) file. This support may change in a later React Native release.
 
 <details>
 <summary><b>Manual linking</b> — only for React Native below 0.60, or react-native-windows below 0.63</summary>
