@@ -37,12 +37,17 @@
     "index.js",
     "index.d.ts",
     "react-native-config.podspec",
-    "!.*ignore"
+    "!.*ignore",
+    "Package.swift",
+    "include/",
+    "spm-headers/",
+    "spm/"
   ],
   "types": "./index.d.ts",
   "license": "MIT",
   "scripts": {
-    "test": "ruby test/run.rb"
+    "test": "ruby test/run.rb && npm run test:spm",
+    "test:spm": "node spm/__tests__/autolinking-plugin.test.js"
   },
   "devDependencies": {
     "@react-native-community/cli": "^20.0.2",
@@ -82,5 +87,9 @@
       "outputDirectory": "./windows/codegen",
       "separateDataTypes": true
     }
+  },
+  "swiftpmConfig": {
+    "name": "RNCConfig",
+    "autolinkingPlugin": "./spm/autolinking-plugin.js"
   }
 }

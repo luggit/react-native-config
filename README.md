@@ -75,6 +75,28 @@ Rebuild the app so the native side is picked up. On iOS / macOS, install the pod
 (Note: For Windows, this module supports autolinking when used with `react-native-windows@0.63`
 or later. For earlier versions you need to manually link the module.)
 
+### iOS with React Native SwiftPM (Preview)
+
+React Native 0.88.1's SwiftPM mode is supported for the **App** subspec on iOS
+15.1 and later. Its autolinking plugin API is currently Preview. After installing
+this library in a SwiftPM app, run `npx react-native spm update`. For an existing
+CocoaPods app, use `npx react-native spm add --deintegrate --yes` to migrate first.
+Run the same setup command after a fresh checkout and dependency installation.
+
+`swiftpmConfig.autolinkingPlugin` registers `spm/autolinking-plugin.js`. It links
+the `RNCConfig` Swift package and stages an app-specific copy of the config reader
+under `ios/build/generated/react-native-config`. A `Config codegen` app phase runs
+the existing Ruby generator before app compilation, so `.env` edits take effect on
+the next build, including clean builds. `ENVFILE` selection works as in CocoaPods.
+
+The reader compiles in the app target because Xcode builds package dependencies
+before app build phases. The bridge compiles in the Swift package; CocoaPods
+continues to compile the original sources. The Extension subspec is not supported
+by this SwiftPM integration.
+Under SwiftPM, native app code imports `<RNCConfig/RNCConfig.h>`.
+The plugin uses Preview autolinking-plugin `generatedSources` support for an
+Objective-C (`.m`) file. This support may change in a later React Native release.
+
 <details>
 <summary><b>Manual linking</b> — only for React Native below 0.60, or react-native-windows below 0.63</summary>
 
