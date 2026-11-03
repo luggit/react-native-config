@@ -37,7 +37,11 @@
     "index.js",
     "index.d.ts",
     "react-native-config.podspec",
-    "!.*ignore"
+    "!.*ignore",
+    "Package.swift",
+    "include/",
+    "spm-headers/",
+    "spm/"
   ],
   "types": "./index.d.ts",
   "license": "MIT",
@@ -82,5 +86,9 @@
       "outputDirectory": "./windows/codegen",
       "separateDataTypes": true
     }
+  },
+  "swiftpmConfig": {
+    "name": "RNCConfig",
+    "autolinkingPlugin": "./spm/autolinking-plugin.js"
   }
 }
